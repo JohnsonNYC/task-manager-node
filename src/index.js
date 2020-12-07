@@ -7,6 +7,14 @@ const port = process.env.PORT || 3000;
 const userRouter = require('./routers/user')
 const taskRouter = require('./routers/task')
 
+// app.use((req,res,next)=>{
+//     if(req.method === 'GET'){
+//         res.send("Get request are disabled")
+//     }else{
+//         next() 
+//     }
+// })
+
 app.use(express.json()) // parse the incoming JSON for us to have it accessbile as an object 
 app.use(userRouter)
 app.use(taskRouter)
