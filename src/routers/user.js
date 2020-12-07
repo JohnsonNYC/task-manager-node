@@ -2,6 +2,7 @@ const User = require('../models/users')
 const express = require('express')
 const router = new express.Router()
 
+
 // This below can be cleaned up using async
 // app.post('/users', (req,res)=>{
 //     const user = new User(req.body)
@@ -16,10 +17,11 @@ const router = new express.Router()
 //Create
 router.post('/users', async (req,res)=>{
     const user = new User(req.body)
-
-    try {
+    
+    try { 
         await user.save()
-        res.status(201).send(user)
+        const token = await user.generateAuthToken()
+        res.status(201).send({user,token})
     } catch (e) {
         res.status(400).send(e)
     }
@@ -29,7 +31,8 @@ router.post('/users/login', async (req,res)=>{
     //find user by credentials. Email and password 
     try{
         const user = await User.findByCredentials(req.body.email, req.body.password)
-        res.send(user)
+        const token = await user.generateAuthToken()
+        res.send({user, token})
     }catch (e){
         res.status(400).send(e)
     }

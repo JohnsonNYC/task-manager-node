@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose')
 const validator = require('validator')
+const jwt = require('jsonwebtoken')
 
 const userSchema = new mongoose.Schema({
     name:{
@@ -38,10 +39,24 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Password cannot be the word `password`')
             }
         }
-    }
+    },
+    tokens:[{
+        token:{
+            type: String,
+            required: true
+        }
+    }]
 })
+userSchema.methods.generateAuthToken = async function(){ //methods for instance functions
+    const user = this
+    const token = jwt.sign({_id: user.id.toString()},"thisismynewcourse")
+    user.tokens = user.tokens.concat({token})
 
-userSchema.statics.findByCredentials = async (email, password ) =>{
+    await user.save()
+    return token   
+}
+
+userSchema.statics.findByCredentials = async (email, password ) =>{ //static for model functions
     const user = await User.findOne({email})
     if(!user){
         throw new Error('Unable to Login')
