@@ -2,7 +2,7 @@ const User = require('../models/users')
 const express = require('express')
 const auth = require('../middleware/auth')
 const router = new express.Router()
-
+const multer = require('multer')
 
 // This below can be cleaned up using async
 // app.post('/users', (req,res)=>{
@@ -51,6 +51,23 @@ router.post('/users/logout', auth,async(req,res)=>{
     }
 }) 
     // Logout All Devices 
+
+const upload = multer({
+    dest:'avatars',
+    limits:{
+        fileSize: 1000000
+    },
+    fileFilter(req,file,cb){
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
+            return cb(new Error('Please upload a pdf'))
+        }
+
+        cb(undefined, true )
+    }
+})
+router.post('/users/me/avatar', upload.single('avatar'), (req,res)=>{
+    res.send()
+})
 router.post('/users/logoutAll', auth, async(req,res) =>{
     try{
         req.user.tokens = [];
