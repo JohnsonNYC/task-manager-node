@@ -60,12 +60,13 @@ userSchema.virtual('tasks', {
     foreignField: "owner"
 })
 
-userSchema.methods.toJSON = function(){
+userSchema.methods.toJSON = function(){ // Deletes some parts of our data that should not be shown inside of response
     const user = this
     const userObj = user.toObject()
 
     delete userObj.password
     delete userObj.tokens
+    delete userObj.avatar
     
     return userObj
 }

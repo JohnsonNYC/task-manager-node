@@ -3,6 +3,7 @@ const express = require('express')
 const auth = require('../middleware/auth')
 const router = new express.Router()
 const multer = require('multer')
+const sharp = require('sharp')
 
 // This below can be cleaned up using async
 // app.post('/users', (req,res)=>{
@@ -66,7 +67,8 @@ const upload = multer({
     }
 })
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req,res)=>{
-    req.user.avatar = req.file.buffer
+    const buffer = await sharp(req.file.buffer).resize({width:250, height:250}).png().toBuffer()
+    req.user.avatar = buffer
     await req.user.save()
     res.send()
 }, (error, req, res, next)=>{
@@ -84,6 +86,7 @@ router.post('/users/logoutAll', auth, async(req,res) =>{
 })
 //Read
 router.get('/users/me',auth , async (req,res)=>{
+
     res.send(req.user )
     // try{
     //     const users = await User.find({})
@@ -91,6 +94,22 @@ router.get('/users/me',auth , async (req,res)=>{
     // } catch (e){
     //     res.status(500).send(e)
     // }
+})
+
+router.get('/users/:id/avatar', async(req,res )=>{
+    try{
+        const user = await User.findById(req.params.id)
+        if(!user || !user.avatar){
+            throw new Error()
+        }
+        // Send back data and tell requester what kind of data like jpeg or png
+        // To do that, set response header
+
+        res.set('Content-Type','image/png')
+        res.send(user.avatar)
+    }catch(e){
+        res.status(404).send()
+    }
 })
 // Update
 router.patch('/users/me', auth,async (req,res)=>{
