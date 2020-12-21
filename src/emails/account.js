@@ -1,5 +1,4 @@
 const sgmail = require('@sendgrid/mail')
-const { getMaxListeners } = require('../models/tasks')
 
 const sendgridAPIKey= process.env.SENDGRID_API_KEY
 
@@ -15,7 +14,6 @@ const sendWelcomeEmail = (email, name) => {
         }
     )
 }
-
 
 const sendCancelEmail = (email, name) => {
     sgmail.send({

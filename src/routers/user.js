@@ -5,7 +5,6 @@ const router = new express.Router()
 const multer = require('multer')
 const sharp = require('sharp')
 const {sendWelcomeEmail, sendCancelEmail} = require('../emails/account')
-const { send } = require('@sendgrid/mail')
 
 // This below can be cleaned up using async
 // app.post('/users', (req,res)=>{
@@ -153,7 +152,6 @@ router.delete('/users/me', auth ,async (req,res)=>{
         res.status(500).send(e)
     }
 })
-
 router.delete('/users/me/avatar', auth, async(req,res)=> {
     try{
         req.user.avatar = undefined
